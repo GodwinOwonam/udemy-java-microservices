@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import net.javaguides.employeeservice.dto.EmployeeDto;
 import net.javaguides.employeeservice.dto.EmployeeWithoutIdDto;
 import net.javaguides.employeeservice.entity.Employee;
+import net.javaguides.employeeservice.exceptions.ResourceNotFoundException;
 import net.javaguides.employeeservice.mappers.EmployeeMapper;
 import net.javaguides.employeeservice.repository.EmployeeRepository;
 import net.javaguides.employeeservice.service.EmployeeService;

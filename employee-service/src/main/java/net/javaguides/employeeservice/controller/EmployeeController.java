@@ -3,10 +3,15 @@ package net.javaguides.employeeservice.controller;
 import lombok.AllArgsConstructor;
 import net.javaguides.employeeservice.dto.EmployeeDto;
 import net.javaguides.employeeservice.dto.EmployeeWithoutIdDto;
+import net.javaguides.employeeservice.exceptions.ErrorDetails;
+import net.javaguides.employeeservice.exceptions.ResourceNotFoundException;
 import net.javaguides.employeeservice.service.EmployeeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
+
+import java.time.LocalDateTime;
 
 @RestController
 @AllArgsConstructor
@@ -27,4 +32,19 @@ public class EmployeeController {
 
         return new ResponseEntity<>(employeeDto, HttpStatus.OK);
     }
+
+    /*@ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorDetails> handleResourceNotFoundException(
+        ResourceNotFoundException exception,
+        WebRequest webRequest
+    ) {
+        ErrorDetails errorDetails = new ErrorDetails(
+            LocalDateTime.now(),
+            exception.getMessage(),
+            webRequest.getDescription(false),
+            "EMPLOYEE_NOT_FOUND"
+        );
+
+        return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
+    }*/
 }

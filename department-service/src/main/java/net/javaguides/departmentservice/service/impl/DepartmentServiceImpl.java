@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import net.javaguides.departmentservice.dto.DepartmentDto;
 import net.javaguides.departmentservice.dto.DepartmentWithoutIdDto;
 import net.javaguides.departmentservice.entity.Department;
+import net.javaguides.departmentservice.exceptions.ResourceNotFoundException;
 import net.javaguides.departmentservice.mappers.DepartmentMapper;
 import net.javaguides.departmentservice.repository.DepartmentRepository;
 import net.javaguides.departmentservice.service.DepartmentService;
@@ -32,6 +33,14 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public DepartmentDto findByCode(String code) {
         Department department = departmentRepository.findByCode(code);
+
+        if(department == null) {
+            throw new ResourceNotFoundException(
+                "Department",
+                "code",
+                code
+            );
+        }
 
         // return modelMapper.map(department, DepartmentDto.class); // Using ModelMapper
         return DepartmentMapper.MAPPER.toDepartmentDto(department);
