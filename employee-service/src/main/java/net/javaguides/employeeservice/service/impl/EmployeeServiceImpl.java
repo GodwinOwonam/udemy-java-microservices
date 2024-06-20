@@ -9,6 +9,7 @@ import net.javaguides.employeeservice.entity.Employee;
 import net.javaguides.employeeservice.exceptions.ResourceNotFoundException;
 import net.javaguides.employeeservice.mappers.EmployeeMapper;
 import net.javaguides.employeeservice.repository.EmployeeRepository;
+import net.javaguides.employeeservice.service.DepartmentServiceAPIClient;
 import net.javaguides.employeeservice.service.EmployeeService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +23,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     private EmployeeRepository employeeRepository;
 
     // private ModelMapper modelMapper;
-    private RestTemplate restTemplate;
+    /*private RestTemplate restTemplate;
 
-    private WebClient webClient;
+    private WebClient webClient;*/
+
+    private DepartmentServiceAPIClient departmentServiceAPIClient;
 
     @Override
     public EmployeeDto create(EmployeeWithoutIdDto employeeDto) {
@@ -63,11 +66,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         DepartmentDto departmentDto = responseEntity.getBody();*/
 
         // Using WebClient
-        DepartmentDto departmentDto = webClient.get()
+        /*DepartmentDto departmentDto = webClient.get()
             .uri("http://localhost:8080/api/departments/" + employee.getDepartmentCode())
             .retrieve()
             .bodyToMono(DepartmentDto.class)
-            .block();
+            .block();*/
+
+        DepartmentDto departmentDto = departmentServiceAPIClient.getDepartment(employee.getDepartmentCode());
 
         EmployeeDto employeeDto = new EmployeeDto(
             employee.getId(),
