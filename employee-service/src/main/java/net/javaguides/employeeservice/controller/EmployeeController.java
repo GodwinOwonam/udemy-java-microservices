@@ -2,6 +2,7 @@ package net.javaguides.employeeservice.controller;
 
 import lombok.AllArgsConstructor;
 import net.javaguides.employeeservice.dto.EmployeeDto;
+import net.javaguides.employeeservice.dto.EmployeeWithDepartmentDto;
 import net.javaguides.employeeservice.dto.EmployeeWithoutIdDto;
 import net.javaguides.employeeservice.exceptions.ErrorDetails;
 import net.javaguides.employeeservice.exceptions.ResourceNotFoundException;
@@ -27,10 +28,10 @@ public class EmployeeController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<EmployeeDto> getEmployee(@PathVariable("id") Long employeeId) {
-        EmployeeDto employeeDto = employeeService.getById(employeeId);
+    public ResponseEntity<EmployeeWithDepartmentDto> getEmployee(@PathVariable("id") Long employeeId) {
+        EmployeeWithDepartmentDto employeeWithDepartment = employeeService.getById(employeeId);
 
-        return new ResponseEntity<>(employeeDto, HttpStatus.OK);
+        return new ResponseEntity<>(employeeWithDepartment, HttpStatus.OK);
     }
 
     /*@ExceptionHandler(ResourceNotFoundException.class)
