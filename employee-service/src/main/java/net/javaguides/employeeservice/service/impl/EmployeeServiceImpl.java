@@ -14,6 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @AllArgsConstructor
@@ -22,6 +23,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     // private ModelMapper modelMapper;
     private RestTemplate restTemplate;
+
+    private WebClient webClient;
 
     @Override
     public EmployeeDto create(EmployeeWithoutIdDto employeeDto) {
@@ -50,12 +53,21 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = employeeRepository.findById(employeeId).get();
 
         // return modelMapper.map(employee, EmployeeDto.class); // Using Model Mapper
-        ResponseEntity<DepartmentDto> responseEntity = restTemplate.getForEntity(
+
+        // Using RestTemplate
+        /*ResponseEntity<DepartmentDto> responseEntity = restTemplate.getForEntity(
             "http://localhost:8080/api/departments/" + employee.getDepartmentCode(),
             DepartmentDto.class
         );
 
-        DepartmentDto departmentDto = responseEntity.getBody();
+        DepartmentDto departmentDto = responseEntity.getBody();*/
+
+        // Using WebClient
+        DepartmentDto departmentDto = webClient.get()
+            .uri("http://localhost:8080/api/departments/" + employee.getDepartmentCode())
+            .retrieve()
+            .bodyToMono(DepartmentDto.class)
+            .block();
 
         EmployeeDto employeeDto = new EmployeeDto(
             employee.getId(),
