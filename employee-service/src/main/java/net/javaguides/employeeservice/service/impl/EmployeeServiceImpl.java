@@ -1,5 +1,6 @@
 package net.javaguides.employeeservice.service.impl;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.AllArgsConstructor;
 import net.javaguides.employeeservice.dto.DepartmentDto;
 import net.javaguides.employeeservice.dto.EmployeeDto;
@@ -51,6 +52,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         );
     }
 
+    @CircuitBreaker(name = "${spring.application.name}", fallbackMethod = "getByIdFallback")
     @Override
     public EmployeeWithDepartmentDto getById(Long employeeId) {
         Employee employee = employeeRepository.findById(employeeId).get();
@@ -73,6 +75,30 @@ public class EmployeeServiceImpl implements EmployeeService {
             .block();*/
 
         DepartmentDto departmentDto = departmentServiceAPIClient.getDepartment(employee.getDepartmentCode());
+
+        EmployeeDto employeeDto = new EmployeeDto(
+            employee.getId(),
+            employee.getFirstName(),
+            employee.getLastName(),
+            employee.getEmail(),
+            employee.getDepartmentCode()
+        );
+
+        return new EmployeeWithDepartmentDto(
+            employeeDto,
+            departmentDto
+        );
+    }
+
+
+    public EmployeeWithDepartmentDto getByIdFallback(Long employeeId, Exception exception) {
+        Employee employee = employeeRepository.findById(employeeId).get();
+
+        DepartmentDto departmentDto = new DepartmentDto();
+        departmentDto.setId(0L);
+        departmentDto.setName("Department not found");
+        departmentDto.setCode("40404");
+        departmentDto.setDescription("Unable to access the Department server at this time. Please try again later.");
 
         EmployeeDto employeeDto = new EmployeeDto(
             employee.getId(),
