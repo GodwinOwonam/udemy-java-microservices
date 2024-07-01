@@ -1,6 +1,7 @@
 package net.javaguides.employeeservice.service.impl;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.AllArgsConstructor;
 import net.javaguides.employeeservice.dto.DepartmentDto;
 import net.javaguides.employeeservice.dto.EmployeeDto;
@@ -13,6 +14,8 @@ import net.javaguides.employeeservice.repository.EmployeeRepository;
 import net.javaguides.employeeservice.service.DepartmentServiceAPIClient;
 import net.javaguides.employeeservice.service.EmployeeService;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -22,6 +25,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 @AllArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
     private EmployeeRepository employeeRepository;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeServiceImpl.class);
 
     // private ModelMapper modelMapper;
     /*private RestTemplate restTemplate;
@@ -52,9 +57,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         );
     }
 
-    @CircuitBreaker(name = "${spring.application.name}", fallbackMethod = "getByIdFallback")
+    /*@CircuitBreaker(name = "${spring.application.name}", fallbackMethod = "getByIdFallback")*/
+    @Retry(name = "${spring.application.name}", fallbackMethod = "getByIdFallback")
     @Override
     public EmployeeWithDepartmentDto getById(Long employeeId) {
+        LOGGER.info("Getting employee with id: {} from getById() method", employeeId);
         Employee employee = employeeRepository.findById(employeeId).get();
 
         // return modelMapper.map(employee, EmployeeDto.class); // Using Model Mapper
@@ -92,6 +99,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
     public EmployeeWithDepartmentDto getByIdFallback(Long employeeId, Exception exception) {
+        LOGGER.info("Getting employee with id: {} from getById() method", employeeId);
+        LOGGER.error("Error: {}", exception.getMessage());
         Employee employee = employeeRepository.findById(employeeId).get();
 
         DepartmentDto departmentDto = new DepartmentDto();
